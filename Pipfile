@@ -13,3 +13,4 @@ gspread = "*"
 
 [dev-packages]
 
+pytest = "*"
