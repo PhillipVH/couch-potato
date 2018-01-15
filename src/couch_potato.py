@@ -1,6 +1,5 @@
-import gspread
+import pygsheets
 
-from oauth2client.service_account import ServiceAccountCredentials
 from optparse import OptionParser
 
 
@@ -10,14 +9,12 @@ def authorize_and_get_sheet():
     movie data.
     :return: The sheet object representing the library
     '''
-    # Use credentials to create a client to interact with the Google Drive API
-    scope = ["https://spreadsheets.google.com/feeds"]
-    credentials = ServiceAccountCredentials.from_json_keyfile_name("client_secret.json", scope)
-    client = gspread.authorize(credentials)
+
+    gc = pygsheets.authorize(service_file="client_secret.json")
 
     # Find a workbook by name and open the first sheet
     # Make sure you use the right name here.
-    sheet = client.open("Copy of Couch Potato").sheet1
+    sheet = gc.open("Copy of Couch Potato").sheet1
 
     # Return the sheet object to the caller
     return sheet
@@ -37,7 +34,7 @@ def main():
     movie_sheet = authorize_and_get_sheet()
 
     # Insert the movie into the library
-    movie_sheet.insert_row([options.movie_name, 0, 0, 0], 2)
+    movie_sheet.insert_rows(row=1, number=1, values=[options.movie_name, 0, 0, 0])
     print(f"Inserted {options.movie_name}! Get to watching!")
 
 

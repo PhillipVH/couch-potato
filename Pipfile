@@ -9,6 +9,7 @@ name = "pypi"
 
 gspread = "*"
 "oauth2client" = "*"
+pygsheets = "*"
 
 
 [dev-packages]
