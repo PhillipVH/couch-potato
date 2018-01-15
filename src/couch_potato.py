@@ -10,6 +10,10 @@ def authorize_and_get_sheet():
     :return: The sheet object representing the library
     '''
 
+    # This line prints out your service email. This is caused by
+    # code in the 1.1.3 release of pygsheets and a pull request
+    # has already been merged that changes this behavior.
+    # TODO Update to 1.1.4 of pygsheets when it gets released
     gc = pygsheets.authorize(service_file="client_secret.json")
 
     # Find a workbook by name and open the first sheet
