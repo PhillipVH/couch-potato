@@ -7,9 +7,8 @@ name = "pypi"
 
 [packages]
 
-gspread = "*"
-"oauth2client" = "*"
 pygsheets = "*"
+"oauth2client" = "*"
 
 
 [dev-packages]
