@@ -55,6 +55,16 @@ def get_random_movie_callback(option, opt, value, parser):
 
     print(f"How do you feel about \"{library[random_index][0]}\"?")
 
+def list_movies(option, opt, value, parser):
+    print("Here they come!")
+
+    # Grab the library
+    library = get_entire_library()
+
+    # Print all the movie names
+    for movie in library:
+        print(f"{movie[0]}")
+
 
 def main():
     usage = "usage: %prog [options] arg"
@@ -71,7 +81,13 @@ def main():
     parser.add_option("-r", "--random",
                       action="callback",
                       callback=get_random_movie_callback,
-                      help="Selects a random movie")
+                      help="Selects a random movie from the library")
+
+    # Option to list all movies
+    parser.add_option("-l", "--list",
+                      action="callback",
+                      callback=list_movies,
+                      help="Lists all movies in the library")
 
     (options, args) = parser.parse_args()
 
