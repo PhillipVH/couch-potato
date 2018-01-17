@@ -3,8 +3,10 @@ import random
 import pygsheets
 
 from optparse import OptionParser
+from functools import lru_cache
 
 
+@lru_cache(maxsize=1)
 def authorize_and_get_sheet():
     '''
     Authorize and obtain a handle to the Google Sheet storing the
@@ -55,6 +57,7 @@ def get_random_movie_callback(option, opt, value, parser):
 
     print(f"How do you feel about \"{library[random_index][0]}\"?")
 
+
 def list_movies(option, opt, value, parser):
     print("Here they come!")
 
@@ -62,8 +65,56 @@ def list_movies(option, opt, value, parser):
     library = get_entire_library()
 
     # Print all the movie names
-    for movie in library:
-        print(f"{movie[0]}")
+    for movie_id, movie_name in enumerate(library):
+        print(f"{movie_id}: {movie_name[0]}")
+
+
+def select_movie_callback(option, opt, value, parser):
+    print("Lemme find that movie, hoss!")
+
+    # Grab the library
+    library = get_entire_library()
+
+    # Select the movie via its index
+    movie = library[value]
+
+    print(f"What attribute of \"{movie[0]}\" do you want to change?")
+
+    # Read in the attribute change we need to apply
+    attr_delta = input("(downloaded|favorite|watched) (true|false) ")
+
+    attr_name = attr_delta.split()[0]
+    attr_state = attr_delta.split()[1]
+
+    # TODO This is horrific and must be fixed
+    attr_cell_letter = None
+    attr_cell_state = None
+
+    if attr_name == "downloaded":
+        attr_cell_letter = "B"
+    elif attr_name == "favorite":
+        attr_cell_letter = "C"
+    elif attr_name == "watched":
+        attr_cell_letter = "D"
+    else:
+        print("Attribute does not exist!")
+
+    if attr_state == "true":
+        attr_cell_state = 1
+    elif attr_state == "false":
+        attr_cell_state = 0
+
+    print(f"Setting {attr_name} to {attr_state}...")
+
+    # Do the actual update
+    sheet = authorize_and_get_sheet()
+
+    cell = sheet.cell(f"{attr_cell_letter}{value+2}")
+    cell.value = attr_cell_state
+
+    cell.update()
+
+    print("And... it's done!")
 
 
 def main():
@@ -88,6 +139,13 @@ def main():
                       action="callback",
                       callback=list_movies,
                       help="Lists all movies in the library")
+
+    # Option to select a movie and modify its attributes
+    parser.add_option("-s", "--select",
+                      action="callback",
+                      callback=select_movie_callback,
+                      type="int", nargs=1, dest="id",
+                      help="Select a movie by ID and modify its attributes")
 
     (options, args) = parser.parse_args()
 
