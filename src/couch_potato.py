@@ -76,6 +76,10 @@ def select_movie_callback(option, opt, value, parser):
     library = get_entire_library()
 
     # Select the movie via its index
+    if len(library) - 1 < value:
+        print("No movie is associated with that ID, sire.")
+        return
+
     movie = library[value]
 
     print(f"What attribute of \"{movie[0]}\" do you want to change?")
@@ -83,13 +87,17 @@ def select_movie_callback(option, opt, value, parser):
     # Read in the attribute change we need to apply
     attr_delta = input("(downloaded|favorite|watched) (true|false) ")
 
-    attr_name = attr_delta.split()[0]
-    attr_state = attr_delta.split()[1]
+    # Make sure we have two arguments
+    attr_split = attr_delta.split()
+
+    if len(attr_split) != 2:
+        print("I need two arguments for that one!")
+        return
+
+    attr_name = attr_split[0]
+    attr_state = attr_split[1]
 
     # TODO This is horrific and must be fixed
-    attr_cell_letter = None
-    attr_cell_state = None
-
     if attr_name == "downloaded":
         attr_cell_letter = "B"
     elif attr_name == "favorite":
@@ -97,12 +105,16 @@ def select_movie_callback(option, opt, value, parser):
     elif attr_name == "watched":
         attr_cell_letter = "D"
     else:
-        print("Attribute does not exist!")
+        print(f"Illegal attribute name: {attr_name}")
+        return
 
     if attr_state == "true":
         attr_cell_state = 1
     elif attr_state == "false":
         attr_cell_state = 0
+    else:
+        print(f"Illegal attribute state: {attr_state}")
+        return
 
     print(f"Setting {attr_name} to {attr_state}...")
 
@@ -114,7 +126,7 @@ def select_movie_callback(option, opt, value, parser):
 
     cell.update()
 
-    print("And... it's done!")
+    print("... it has been done!")
 
 
 def main():
